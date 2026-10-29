@@ -1,0 +1,16 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog busy='{editInforme>/busy}' busyIndicatorDelay='0' title=" Editar Rol" type='Message' contentWidth="400px">
+		<content>
+			<Label text=" {i18n>titulo}" labelFor="ipTITULOEditar"/>
+			<Input editable="false" id="ipTITULOEditar" width='100%' type='Text' value="{TITULO}" liveChange="liveChange"/>
+			<Label class="sapUiSmallMarginTop" text=" {i18n>descripcion}" labelFor="ipDESCRIPCIONEditar"/>
+			<TextArea editable="false" id="ipDESCRIPCIONEditar" width='100%' value="{DESCRIPCION}" rows="4"></TextArea>
+			<VBox class="sapUiSmallMarginTop"><Label text=" {i18n>apps}"/>
+				<Link class="sapUiTinyMarginBegin sapUiTinyMarginTop" text="{i18n>ver}" press="openListAplicacionesView"></Link>
+			</VBox>
+		</content>
+		<endButton>
+			<Button text="{i18n>close}" press="_dialogRolesEditarClose"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

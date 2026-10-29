@@ -1,0 +1,93 @@
+_schema-version: "3.2"
+ID: z_admin_roles_portal
+version: 0.0.1
+modules:
+- name: z_admin_roles_portal-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: z_admin_roles_portal-destination-service
+    parameters:
+      content-target: true
+  - name: z_admin_roles_portal_html_repo_host
+    parameters:
+      service-key:
+        name: z_admin_roles_portal_html_repo_host-key
+  - name: uaa_z_admin_roles_portal
+    parameters:
+      service-key:
+        name: uaa_z_admin_roles_portal-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: z_admin_roles_portal_z_admin_roles_portal_html_repo_host
+          ServiceInstanceName: z_admin_roles_portal-html5-app-host-service
+          ServiceKeyName: z_admin_roles_portal_html_repo_host-key
+          sap.cloud.service: z_admin_roles_portal
+        - Authentication: OAuth2UserTokenExchange
+          Name: z_admin_roles_portal_uaa_z_admin_roles_portal
+          ServiceInstanceName: z_admin_roles_portal-xsuaa-service
+          ServiceKeyName: uaa_z_admin_roles_portal-key
+          sap.cloud.service: z_admin_roles_portal
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: z_admin_roles_portal-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: z_admin_roles_portal_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - comclaroproveedoresadminrolesportal.zip
+      name: comclaroproveedoresadminrolesportal
+      target-path: resources/
+- name: comclaroproveedoresadminrolesportal
+  type: html5
+  path: adminrolesportal
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: z_admin_roles_portal-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: z_admin_roles_portal-destination-service
+    service-plan: lite
+- name: z_admin_roles_portal_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: z_admin_roles_portal-html5-app-host-service
+    service-plan: app-host
+- name: uaa_z_admin_roles_portal
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: z_admin_roles_portal-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true

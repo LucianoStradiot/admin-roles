@@ -1,0 +1,43 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+    <Dialog busy="{editInforme>/busy}" busyIndicatorDelay="0" title="{i18n>listaAplicaciones}" type="Message" contentWidth="436px">
+        <content>
+            <SearchField id="searchFieldAplicacionesId" liveChange="buscarAplicaciones" width="100%"></SearchField>
+            <Toolbar width="100%">
+                <CheckBox class="sapUiSmallMarginTop sapUiTinyMarginBottom" select="onSelectAll" id="seleccionarTodosId" selected="false"
+                    text="{i18n>seleccionarTodos}"></CheckBox>
+                <ToolbarSpacer></ToolbarSpacer>
+                <Text id="seleccionadosId" text="{i18n>seleccionados}"></Text>
+            </Toolbar>
+            <ScrollContainer class="sapUiSmallMarginTop sapUiNoContentPadding" horizontal="false" vertical="true" height="400px">
+                <l:Grid id="gridAplicacionesId" vSpacing="1" hSpacing="1" width="auto" content="{ path: 'modelAplicacion>/' }">
+                    <VBox height="18.4rem" class="borderGris" visible="{modelAplicacion>VISIBLE}">
+                        <Bar>
+                            <contentLeft>
+                                <CheckBox selected="{modelAplicacion>SELECTED}" select="onSelectCheckBox"></CheckBox>
+                            </contentLeft>
+                            <contentMiddle>
+                                <Label class="non-selectable cursorDefault" tooltip="{modelAplicacion>appID} - {modelAplicacion>description}" text="{modelAplicacion>appID} - {modelAplicacion>description}" design="Bold"></Label>
+                            </contentMiddle>
+                        </Bar>
+                        <Image width="100%" height="12.6rem" src="{modelAplicacion>url}"></Image>
+                        <Toolbar class="non-selectable" design="Solid" enabled="{modelAplicacion>ENABLED_ACCIONES}">
+                            <ScrollContainer width="100%" vertical="false" horizontal="true" content="{modelAplicacion>AplicacionTOAccionApp/results/}">
+                                <CheckBox select="seleccionaAcciones" selected="{modelAplicacion>SELECTED}" class="sapUiTinyMarginEnd"
+                                    text="{modelAplicacion>Accion_AppTOAccion/NOMBRE}"></CheckBox>
+                            </ScrollContainer>
+                        </Toolbar>
+                        <layoutData>
+                            <l:GridData span="XL12 L12 M12 S12"/>
+                        </layoutData>
+                    </VBox>
+                </l:Grid>
+            </ScrollContainer>
+        </content>
+        <beginButton>
+            <Button id="ButtonAceptarApp" text="{i18n>aceptar}" type="Emphasized" press="onAceptarListAplicaciones"/>
+        </beginButton>
+        <endButton>
+            <Button text="{i18n>cancelar}" type="Transparent" press="onCancelarListAplicaciones"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

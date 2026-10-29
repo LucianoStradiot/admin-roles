@@ -1,0 +1,178 @@
+<mvc:View
+    controllerName="com.claro.proveedores.adminrolesportal.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:core="sap.ui.core"
+    xmlns:plugins="sap.m.plugins">
+
+    <Page id="pageRoles" title="{i18n>title}">
+        <headerContent>
+            <Button
+                tooltip="{i18n>actualizar}"
+                icon="sap-icon://synchronize"
+                press="oActualizarVista"/>
+        </headerContent>
+
+        <content>
+            <fb:FilterBar
+                id="filterbar"
+                persistencyKey="myPersKey"
+                useToolbar="false"
+                search=".onSearch"
+                showFilterConfiguration="false"
+                showGoOnFB="false">
+
+                <fb:filterGroupItems>
+                    <fb:FilterGroupItem
+                        name="Búsqueda"
+                        label="{i18n>busqueda}"
+                        groupName="Group1"
+                        visibleInFilterBar="true">
+                        <fb:control>
+                            <SearchField
+                                id="oSearchFieldRolId"
+                                liveChange="onLiveChangeListRol"
+                                placeholder="{i18n>buscarPlaceholder}"/>
+                        </fb:control>
+                    </fb:FilterGroupItem>
+                </fb:filterGroupItems>
+            </fb:FilterBar>
+
+            <Table
+                id="oTableRolId"
+                mode="None"
+                alternateRowColors="false"
+                updateFinished="oupdateFinishedTitle"
+                inset="false"
+                items="{oModeloRolPortal>/DATA/}"
+                fixedLayout="false"
+                showNoData="true"
+                noDataText="{i18n>sinDatos}">
+
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title
+                            text="{oModeloRolPortal>/TITULO_TABLA}"
+                            level="H2"/>
+
+                        <Button
+                            tooltip="{i18n>descargaExcel}"
+                            icon="sap-icon://excel-attachment"
+                            press="oDescargaExcel"
+                            enabled="{modelSettings>/enabledButtonTable}"/>
+
+                        <ToolbarSpacer/>
+
+                        <Button
+                            tooltip="{i18n>ordenar}"
+                            icon="sap-icon://sort"
+                            press="handleSortButtonPressed"
+                            enabled="{modelSettings>/enabledButtonTable}"/>
+
+                        <Button
+                            tooltip="{i18n>filtrar}"
+                            icon="sap-icon://add-filter"
+                            press="handleFilterButtonPressed"
+                            enabled="{modelSettings>/enabledButtonTable}"/>
+
+                        <Button
+                            text="{i18n>nuevoRol}"
+                            type="Emphasized"
+                            press="onDialogoNuevoRol"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+
+                <columns>
+                    <Column
+                        id="colTITULO"
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        width="auto">
+                        <Text text="{i18n>titulo}"/>
+                    </Column>
+
+                    <Column
+                        id="colDESCRIPCION"
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        width="auto">
+                        <Text text="{i18n>descripcion}"/>
+                    </Column>
+
+                    <Column
+                        id="colUsuarios"
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        hAlign="Center"
+                        width="5rem">
+                        <Text text="{i18n>usuarios}"/>
+                    </Column>
+
+                    <Column
+                        id="colAplicaciones"
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        width="6rem"
+                        hAlign="Center">
+                        <Text text="{i18n>aplicaciones}"/>
+                    </Column>
+
+                    <Column
+                        id="colEstado"
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        width="6rem"
+                        hAlign="Center">
+                        <Text text="{i18n>estado}"/>
+                    </Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem
+                        type="Inactive"
+                        vAlign="Middle"
+                        detailPress="onDialogoEditarRol">
+                        <cells>
+                            <ObjectIdentifier
+                                text="{oModeloRolPortal>PROFILEID}"/>
+
+                            <Text
+                                text="{oModeloRolPortal>PROFILES_DESCRIPTION}"
+                                wrapping="true"/>
+
+                            <Button
+                                text="{oModeloRolPortal>COUNT_USUARIOS}"
+                                icon="sap-icon://user-settings"
+                                iconFirst="true"
+                                press="openListUsuariosEdit"/>
+
+                            <Button
+                                text="{oModeloRolPortal>COUNT_APLICACIONES}"
+                                icon="sap-icon://show"
+                                iconFirst="true"
+                                press="openListAplicacionesView"/>
+
+                            <HBox
+                                justifyContent="Center"
+                                alignItems="Center">
+                                <ObjectStatus
+                                    text="{oModeloRolPortal>DELETESTATUS_DESCRIPTION}"
+                                    inverted="true"
+                                    state="{= ${oModeloRolPortal>DELETESTATUS_DESCRIPTION} === 'ACTIVO' ? 'Success' : 'Error' }"/>
+
+                                <Button
+                                    class="sapUiTinyMarginBegin"
+                                    enabled="{= ${oModeloRolPortal>COUNT_USUARIOS} === 0 ? true : false }"
+                                    icon="sap-icon://delete"
+                                    type="Transparent"
+                                    press="onPressButtonDeleteRol"/>
+                            </HBox>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

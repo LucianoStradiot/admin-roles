@@ -1,0 +1,9 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<ViewSettingsDialog confirm="handleSortDialogConfirm" sortDescending="true" resetFilters="onResetSort">
+		<sortItems>
+			<ViewSettingsItem text="{i18n>titulo}" key="PROFILEID"/>
+			<ViewSettingsItem text="{i18n>descripcion}" key="PROFILES_DESCRIPTION"/>		
+		</sortItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>

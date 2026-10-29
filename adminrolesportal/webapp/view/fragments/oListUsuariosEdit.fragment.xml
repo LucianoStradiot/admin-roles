@@ -1,0 +1,42 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout">
+	<Dialog busyIndicatorDelay='0' class="sapUiNoContentPadding" title="Lista de Usuarios asignados" type='Message' contentWidth="436px">
+		<content>
+			<List id="listaPerfilesId" sticky="HeaderToolbar,InfoToolbar" noDataText="{i18n>noDataPerfil}" delete="onDeletePerfilXUsuario" mode="None" items="{ path: 'modelListUsuariosEdit>/', sorter: [{ path: 'DELETESTATUS', descending: true,group: '.grouperPerfiles'}] }">
+				<headerToolbar>
+					<Toolbar>
+						<Title id="titleUsuariosAsignadosId" text="{i18n>usuariosAsignados}"/>
+						<ToolbarSpacer/>
+						<ToggleButton id="buttonDeletePerfilesId" enabled="false" icon="sap-icon://delete" type="Transparent" pressed="false" press="onPressToggleButtonDeletePerfiles"></ToggleButton>
+					</Toolbar>
+				</headerToolbar>
+				<infoToolbar>
+					<Toolbar>
+						<SearchField id="oSearchFieldListPerfilesId" liveChange="onSearchListPerfil" placeholder="{i18n>buscarPlaceholder}"/>
+					</Toolbar>
+				</infoToolbar>
+				<CustomListItem>
+					<HBox alignItems="Center" class="sapUiTinyMargin">
+						<VBox class="sapUiTinyMarginBegin sapUiTinyMarginTopBottom">
+							<Title level="H5" titleStyle="H5" text="{modelListUsuariosEdit>EMAIL}"></Title>
+							<HBox alignItems="Center"><ObjectAttribute title="{i18n>tipoUsuario}"></ObjectAttribute><Label design="Bold" text=" {modelListUsuariosEdit>DESCRIPTION_USERSTYPE}"></Label></HBox>
+							<HBox alignItems="Center"><ObjectAttribute title="{i18n>estadoUsuario}"></ObjectAttribute><Label design="Bold" text=" {modelListUsuariosEdit>DESCRIPTION_USERSSTATUS}"></Label></HBox>
+							<HBox alignItems="Center">
+								<Label text="{i18n>estatusAsignacionPortal}"></Label>
+								<Switch type="AcceptReject" change="onChangeStatusPerfil" state="{= ${modelListUsuariosEdit>DELETESTATUS} === '0' ? false : true }">
+									<layoutData>
+										<FlexItemData growFactor="1" />
+									</layoutData>
+								</Switch>
+							</HBox>
+						</VBox>
+					</HBox>
+				</CustomListItem>
+			</List>
+		</content>
+		<endButton>
+			<Button text="{i18n>close}" type="Transparent" press="closeListUsuariosEdit"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

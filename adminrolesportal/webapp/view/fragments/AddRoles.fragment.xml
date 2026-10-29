@@ -1,0 +1,49 @@
+ <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+    <Dialog busy="{editInforme>/busy}" busyIndicatorDelay="0" title="{i18n>crearRol}" type="Message" contentWidth="450px">
+        <content>
+            <Label text="{i18n>titulo}" labelFor="ipTITULOCrear" required="true"/>
+            <Input id="ipTITULOCrear" width="100%" type="Text" liveChange="upperCase" maxLength="100"/>
+            <Label class="sapUiSmallMarginTop" text="{i18n>descripcion}" labelFor="ipDESCRIPCIONCrear" required="true"/>
+            <TextArea id="ipDESCRIPCIONCrear" width="100%" rows="4" maxLength="255"></TextArea>
+            <Table class="sapUiSmallMarginTop" sticky="ColumnHeaders,HeaderToolbar" id="idAplicacionesTable" inset="false" delete="onDeleteApp"
+                items="{oModeloSeleccionAplicaciones>/}" updateFinished="conuntTitle" mode="Delete">
+                <headerToolbar>
+                    <Toolbar>
+                        <content>
+                            <Title id="titleAplicacionesId" text="{i18n>aplicacionesContador}" level="H2"/>
+                            <ToolbarSpacer/>
+                            <Button id="addButton" tooltip="{i18n>crearRoles}" icon="sap-icon://add" type="Transparent" press="openListAplicaciones"/>
+                        </content>
+                    </Toolbar>
+                </headerToolbar>
+                <infoToolbar>
+                    <Toolbar visible="false">
+                        <MessageStrip type="Error" text="{i18n>asignarAplicacionRol}" showCloseButton="false"></MessageStrip>
+                    </Toolbar>
+                </infoToolbar>
+                <columns>
+                    <Column hAlign="Left" minScreenWidth="Tablet" demandPopin="true" width="auto">
+                        <Text text="{i18n>nombre}"/>
+                    </Column>
+                    <Column hAlign="Left" width="auto">
+                        <Text text="{i18n>acciones}"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem type="Inactive" vAlign="Middle">
+                        <cells>
+                            <Label design="Bold" text="{oModeloSeleccionAplicaciones>appID} - {oModeloSeleccionAplicaciones>description}" wrapping="true"></Label>
+                            <Text text="{oModeloSeleccionAplicaciones>ACCIONES}" wrapping="true"></Text>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+        <beginButton>
+            <Button id="btCrearRoles" type="Emphasized" text="{i18n>guardar}" press="_dialogRolesGuardar"/>
+        </beginButton>
+        <endButton>
+            <Button text="{i18n>cancelar}" press="_dialogRolesClose"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>
