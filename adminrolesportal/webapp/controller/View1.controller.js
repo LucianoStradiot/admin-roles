@@ -17,7 +17,7 @@ sap.ui.define([
             onInit: function () {
                 this._mViewSettingsDialogs = {};
                 this.getOwnerComponent().getRouter().getRoute("view1").attachPatternMatched(this._onObjectMatched, this);
-                // sap.ui.getCore().getConfiguration().setLanguage("es");
+                sap.ui.getCore().getConfiguration().setLanguage("es");
             },
 
             _onObjectMatched: function () {
@@ -86,9 +86,14 @@ sap.ui.define([
 
                 $.ajax(settings).done(function (response) {
                     let dataResponse = response;
-                    oModeloRolPortal.setData({
-                        DATA: dataResponse
-                    })
+                    dataResponse.forEach(function (item) {
+                        if (item.DELETESTATUS_DESCRIPTION === "ACTIVO") {
+                            item.DELETESTATUS_DESCRIPTION = this.i18n.getText("estadoActivo");
+                        } else if (item.DELETESTATUS_DESCRIPTION === "INACTIVO") {
+                            item.DELETESTATUS_DESCRIPTION = this.i18n.getText("estadoInactivo");
+                        }
+                    }.bind(this));
+                    oModeloRolPortal.setData({ DATA: dataResponse })
                     this.setTituloTabla();
                     oModeloRolPortal.refresh();
                     this.BusyDialog.close();
@@ -139,6 +144,7 @@ sap.ui.define([
             openListAplicacionesView: function (oEvent) {
 
                 this._oViewViewListAplicacionesDialog = sap.ui.xmlfragment("com.claro.proveedores.adminrolesportal.view.fragments.viewAplicaciones", this);
+                this._oViewViewListAplicacionesDialog.setModel(this.getView().getModel("i18n"), "i18n");
                 var datosSeleccionados = oEvent.getSource().getBindingContext("oModeloRolPortal").getObject();
 
                 this._oViewViewListAplicacionesDialog.open();
@@ -167,6 +173,7 @@ sap.ui.define([
 
             levantarPerfiles: function () {
                 this._oViewListUsuariosEditDialog = sap.ui.xmlfragment("com.claro.proveedores.adminrolesportal.view.fragments.oListUsuariosEdit", this);
+                this._oViewListUsuariosEditDialog.setModel(this.getView().getModel("i18n"), "i18n");
                 var datosSeleccionados = this.itemSeleccionado;
 
                 this._oViewListUsuariosEditDialog.open();
@@ -261,6 +268,7 @@ sap.ui.define([
                 this._oViewAddRolesDialog.attachAfterClose(function () {
                     this._dialogRolesClose();
                 }.bind(this));
+                this._oViewAddRolesDialog.setModel(this.getView().getModel("i18n"), "i18n");
                 this._oViewAddRolesDialog.open();
                 var oModeloSeleccionAplicaciones = new JSONModel([]);
                 this._oViewAddRolesDialog.setModel(oModeloSeleccionAplicaciones, "oModeloSeleccionAplicaciones")
@@ -276,6 +284,7 @@ sap.ui.define([
             openListAplicaciones: function () {
 
                 this._oViewListAplicacionesDialog = sap.ui.xmlfragment("com.claro.proveedores.adminrolesportal.view.fragments.listAplicaciones", this);
+                this._oViewListAplicacionesDialog.setModel(this.getView().getModel("i18n"), "i18n");
                 this._oViewListAplicacionesDialog.attachAfterClose(function () {
                     this.onCancelarListAplicaciones();
                 }.bind(this));
@@ -481,10 +490,10 @@ sap.ui.define([
                                             }
                                             this.getView().getModel("modeloDatos").create('/Profiles', jsonData, {
                                                 success: function (oResult) {
-                                                    this.setLogSystem("Creación", "El sistema agregó correctamente un nuevo registro en la tabla DB_PROFILES", oResult).then(function () {
-                                                        i2++;
-                                                        functionRecorrer2(items2, i2);
-                                                    }.bind(this));
+                                                    // this.setLogSystem("Creación", "El sistema agregó correctamente un nuevo registro en la tabla DB_PROFILES", oResult).then(function () {
+                                                    i2++;
+                                                    functionRecorrer2(items2, i2);
+                                                    // }.bind(this));
                                                 }.bind(this),
                                                 error: function (oError) {
                                                     e++;
@@ -730,9 +739,9 @@ sap.ui.define([
                 var data = modelo.getData();
                 this.contador = 0;
                 if (condition) {
-                    selectAllText.setText("Deseleccionar Todos");
+                    selectAllText.setText(this.i18n.getText("deseleccionarTodos"));
                 } else {
-                    selectAllText.setText("Seleccionar Todos");
+                    selectAllText.setText(this.i18n.getText("seleccionarTodos"));
                 }
 
                 data.forEach(function (element, index) {
@@ -996,22 +1005,33 @@ sap.ui.define([
             },
 
             oDescargaExcel: function () {
-                var aCols, oBinding, oSettings, oSheet, oTable;
+                var aCols, oBinding, oSettings, oSheet, oTable, aData;
 
                 oTable = this.getView().byId('oTableRolId');
                 oBinding = oTable.getBinding('items');
                 aCols = this.createColumnConfig();
+                aData = oBinding.getCurrentContexts().map(function (oContext) {
+                    var oItem = Object.assign({}, oContext.getObject());
+
+                    if (oItem.DELETESTATUS_DESCRIPTION === "ACTIVO") {
+                        oItem.DELETESTATUS_DESCRIPTION = this.i18n.getText("estadoActivo");
+                    } else if (oItem.DELETESTATUS_DESCRIPTION === "INACTIVO") {
+                        oItem.DELETESTATUS_DESCRIPTION = this.i18n.getText("estadoInactivo");
+                    }
+
+                    return oItem;
+                }.bind(this));
 
                 oSettings = {
                     workbook: { columns: aCols },
-                    fileName: 'RolesPortalProveedoresyContratistas.xlsx',
+                    fileName: 'Roles.xlsx',
                     dataSource: oBinding
                 };
 
                 oSheet = new Spreadsheet(oSettings);
                 oSheet.build().then(function () {
                     MessageToast.show(this.i18n.getText("descargaFinalizada"));
-                }).finally(function () {
+                }.bind(this)).finally(function () {
                     oSheet.destroy();
                 });
             },
@@ -1103,13 +1123,13 @@ sap.ui.define([
                             };
 
                             $.ajax(settings).done(function (oDataRU) {
-                                this.setLogSystem("Actualización", oDataRU.message, oDataRU.data).then(function () {
-                                    var respuestaRU = oDataRU;
-                                    this.BusyDialog.close();
-                                    MessageToast.show(this.i18n.getText("procesoFinalizado"));
-                                    this.closeListUsuariosEdit();
-                                    this.levantarPerfiles();
-                                }.bind(this));
+                                // this.setLogSystem("Actualización", oDataRU.message, oDataRU.data).then(function () {
+                                var respuestaRU = oDataRU;
+                                this.BusyDialog.close();
+                                MessageToast.show(this.i18n.getText("procesoFinalizado"));
+                                this.closeListUsuariosEdit();
+                                this.levantarPerfiles();
+                                // }.bind(this));
                             }.bind(this)).fail(function (jqXHR, textStatus, errorThrown) {
                                 this.BusyDialog.close();
                             }.bind(this));
@@ -1147,12 +1167,12 @@ sap.ui.define([
                             };
 
                             $.ajax(settings).done(function (oDataRU) {
-                                this.setLogSystem("Eliminación", oDataRU.message, oDataRU.data).then(function () {
-                                    var respuestaRU = oDataRU;
-                                    this.BusyDialog.close();
-                                    MessageToast.show(this.i18n.getText("procesoFinalizado"));
-                                    this.oActualizarVista();
-                                }.bind(this));
+                                // this.setLogSystem("Eliminación", oDataRU.message, oDataRU.data).then(function () {
+                                var respuestaRU = oDataRU;
+                                this.BusyDialog.close();
+                                MessageToast.show(this.i18n.getText("procesoFinalizado"));
+                                this.oActualizarVista();
+                                // }.bind(this));
                             }.bind(this)).fail(function (jqXHR, textStatus, errorThrown) {
                                 MessageToast.show(this.i18n.getText("errorProcesarAccion"));
                                 this.BusyDialog.close();
@@ -1192,13 +1212,13 @@ sap.ui.define([
                             };
 
                             $.ajax(settings).done(function (oDataRU) {
-                                this.setLogSystem("Eliminación", oDataRU.message, oDataRU.data).then(function () {
-                                    var respuestaRU = oDataRU;
-                                    this.BusyDialog.close();
-                                    MessageToast.show(this.i18n.getText("procesoFinalizado"));
-                                    this.closeListUsuariosEdit();
-                                    this.levantarPerfiles();
-                                }.bind(this));
+                                // this.setLogSystem("Eliminación", oDataRU.message, oDataRU.data).then(function () {
+                                var respuestaRU = oDataRU;
+                                this.BusyDialog.close();
+                                MessageToast.show(this.i18n.getText("procesoFinalizado"));
+                                this.closeListUsuariosEdit();
+                                this.levantarPerfiles();
+                                // }.bind(this));
                             }.bind(this)).fail(function (jqXHR, textStatus, errorThrown) {
                                 this.BusyDialog.close();
                             }.bind(this));
@@ -1225,31 +1245,31 @@ sap.ui.define([
                 return sValue;
             },
 
-            setLogSystem: function (action, description, detail) {
-                return new Promise(function (resolve) {
-                    let mail = this.jsonDataUser.userMail;
-                    let jsonData = {};
+            // setLogSystem: function (action, description, detail) {
+            //     return new Promise(function (resolve) {
+            //         let mail = this.jsonDataUser.userMail;
+            //         let jsonData = {};
 
-                    let uuid = self.crypto.randomUUID();
-                    jsonData.ID = uuid; // Type="Edm.Guid" Nullable="false"/>
-                    jsonData.creation_date = this.getDateTime(new Date()); // Type="Edm.DateTimeOffset"/>
-                    jsonData.action = action; // Type="Edm.String" MaxLength="100"/>
-                    jsonData.location = "Mantenedores"; // Type="Edm.String" MaxLength="50"/>
-                    jsonData.description = description; // Type="Edm.String" MaxLength="999"/>
-                    jsonData.creation_user = mail; // Type="Edm.String" MaxLength="255"/>
-                    jsonData.app_description = "Administrador de roles"; // Type="Edm.String" MaxLength="999"/>
-                    jsonData.detail = JSON.stringify(detail); // Type="Edm.String"/>
-                    jsonData.deleteStatus = "1"; // Type="Edm.String" MaxLength="1"/>
-                    this.getView().getModel("modeloDatos").create('/SystemLog', jsonData, {
-                        success: function (oResult) {
-                            resolve();
-                        }.bind(this),
-                        error: function (oError) {
-                            resolve();
-                        }.bind(this)
-                    });
-                }.bind(this));
-            }
+            //         let uuid = self.crypto.randomUUID();
+            //         jsonData.ID = uuid; // Type="Edm.Guid" Nullable="false"/>
+            //         jsonData.creation_date = this.getDateTime(new Date()); // Type="Edm.DateTimeOffset"/>
+            //         jsonData.action = action; // Type="Edm.String" MaxLength="100"/>
+            //         jsonData.location = "Mantenedores"; // Type="Edm.String" MaxLength="50"/>
+            //         jsonData.description = description; // Type="Edm.String" MaxLength="999"/>
+            //         jsonData.creation_user = mail; // Type="Edm.String" MaxLength="255"/>
+            //         jsonData.app_description = "Administrador de roles"; // Type="Edm.String" MaxLength="999"/>
+            //         jsonData.detail = JSON.stringify(detail); // Type="Edm.String"/>
+            //         jsonData.deleteStatus = "1"; // Type="Edm.String" MaxLength="1"/>
+            //         this.getView().getModel("modeloDatos").create('/SystemLog', jsonData, {
+            //             success: function (oResult) {
+            //                 resolve();
+            //             }.bind(this),
+            //             error: function (oError) {
+            //                 resolve();
+            //             }.bind(this)
+            //         });
+            //     }.bind(this));
+            // }
 
 
         });

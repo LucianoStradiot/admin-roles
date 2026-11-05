@@ -160,7 +160,7 @@
                                 <ObjectStatus
                                     text="{oModeloRolPortal>DELETESTATUS_DESCRIPTION}"
                                     inverted="true"
-                                    state="{= ${oModeloRolPortal>DELETESTATUS_DESCRIPTION} === 'ACTIVO' ? 'Success' : 'Error' }"/>
+                                    state="{= ${oModeloRolPortal>DELETESTATUS_DESCRIPTION} === ${i18n>estadoActivo} ? 'Success' : 'Error' }"/>
 
                                 <Button
                                     class="sapUiTinyMarginBegin"
